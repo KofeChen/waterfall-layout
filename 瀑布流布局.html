@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>瀑布流布局</title>
+  <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+  <style>
+    .waterfall img {
+      width: 100px;
+      margin: 10px;
+      position: absolute;
+      transition: all .4s;
+    }
+  </style>
+</head>
+<body>
+  <div class="waterfall">
+    <img src="http://via.placeholder.com/100x100" alt="300*100">
+    <img src="http://via.placeholder.com/100x70" alt="300*70">
+    <img src="http://via.placeholder.com/100x150" alt="300*150">
+    <img src="http://via.placeholder.com/100x250" alt="300*250">
+    <img src="http://via.placeholder.com/100x80" alt="300*80">
+    <img src="http://via.placeholder.com/100x90" alt="300*90">
+    <img src="http://via.placeholder.com/100x120" alt="300*120">
+    <img src="http://via.placeholder.com/100x210" alt="300*210">
+    <img src="http://via.placeholder.com/100x230" alt="300*230">
+    <img src="http://via.placeholder.com/100x100" alt="300*100">
+    <img src="http://via.placeholder.com/100x70" alt="300*70">
+    <img src="http://via.placeholder.com/100x150" alt="300*150">
+    <img src="http://via.placeholder.com/100x250" alt="300*250">
+    <img src="http://via.placeholder.com/100x80" alt="300*80">
+    <img src="http://via.placeholder.com/100x90" alt="300*90">
+    <img src="http://via.placeholder.com/100x120" alt="300*120">
+    <img src="http://via.placeholder.com/100x210" alt="300*210">
+    <img src="http://via.placeholder.com/100x230" alt="300*230">
+  </div>
+
+  <script>
+
+    var waterfall = {
+      init: function() {
+        this.clock = null
+        this.colHeightArray = []
+        this.imgWidth = $('.waterfall img').outerWidth(true)
+        this.colCount = Math.floor($(window).width() / this.imgWidth)
+        for (var i = 0; i < this.colCount; i++) {
+          this.colHeightArray[i] = 0
+        }
+        this.bind()
+      },
+      bind: function() {
+        var _this = this
+        $('.waterfall img').on('load', function() {
+          _this.layout($(this))
+        })
+        $(window).on('resize', function() {
+          if (_this.clock) clearTimeout(_this.clock)
+
+          _this.colCount = Math.floor($(window).width() / _this.imgWidth)
+          for (var i = 0; i < _this.colCount; i++) {
+            _this.colHeightArray[i] = 0
+          }
+          
+          _this.clock = setTimeout(function() {
+            $('.waterfall img').each(function() {
+              _this.layout($(this))
+            })
+            console.log("resize")
+          }, 300);
+        })
+      },
+      layout: function($node) {
+        var minValue = this.colHeightArray[0]
+        var minIndex = 0
+
+        for (var i = 0; i < this.colCount; i++) {
+          if (this.colHeightArray[i] < minValue) {
+            minValue = this.colHeightArray[i] 
+            minIndex = i
+          }
+        }
+        $node.css({
+          left: minIndex * this.imgWidth,
+          top: minValue
+        })
+        this.colHeightArray[minIndex] += $node.outerHeight(true)
+      }
+    }
+
+    waterfall.init()
+    
+    // var colCount
+    // var colHeightArray = []
+    // var imgWidth = $('.waterfall img').outerWidth(true)
+
+    // colCount = Math.floor($(window).width() / imgWidth)
+    // for (var i = 0; i < colCount; i++) {
+    //     colHeightArray[i] = 0
+    // }
+
+    // $('.waterfall img').on('load', function() {
+    //     var minValue = colHeightArray[0]
+    //     var minIndex = 0
+
+    //     for (var i = 0; i < colCount; i++) {
+    //       if (colHeightArray[i] < minValue) {
+    //         minValue = colHeightArray[i] 
+    //         minIndex = i
+    //       }
+    //     }
+    //     $(this).css({
+    //       left: minIndex * imgWidth,
+    //       top: minValue
+    //     })
+    //     colHeightArray[minIndex] += $(this).outerHeight(true)
+    // })
+
+  </script>
+
+</body>
+</html>
